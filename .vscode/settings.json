@@ -1,0 +1,17 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": [
+    "./co-markdown-frontend",
+    "./co-markdown-backend"
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true
+  }
+}
