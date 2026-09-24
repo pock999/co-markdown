@@ -1,0 +1,19 @@
+FROM node:20
+
+WORKDIR /app
+
+# context 改成 . (外層)，確保有 shared
+COPY co-markdown-backend/package*.json ./co-markdown-backend/
+
+WORKDIR /app/co-markdown-backend
+
+RUN npm install
+
+WORKDIR /app
+
+COPY co-markdown-backend/ ./co-markdown-backend/
+COPY shared/ ./shared/
+
+WORKDIR /app/co-markdown-backend
+
+CMD ["npm", "run", "dev"]

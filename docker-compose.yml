@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: co-markdown-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: co_markdown
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  co-markdown-backend:
+    build:
+      # 要看到 shared
+      context: .
+      dockerfile: ./co-markdown-backend/Dockerfile.dev
+    container_name: co-markdown-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      # backend_node_modules 是 Volume 的「名稱」
+      # 不是 alias，這個 Volume 是獨立的儲存空間，
+      # 掛到 Container 的 /app/node_modules
+      - backend_node_modules:/app/co-markdown-backend/node_modules
+
+    command: npm run dev
+
+    develop:
+      watch:
+        # 本機的程式碼有變化
+        # → 同步到 Container 的 /app
+        # → 重啟 backend
+        - action: sync+restart
+          path: ./co-markdown-backend
+          target: /app/co-markdown-backend
+          ignore:
+            - node_modules/
+        
+        - action: sync+restart
+          path: ./shared
+          target: /app/shared
+
+  co-markdown-frontend:
+    build:
+      # 要看到 shared
+      context: .
+      dockerfile: ./co-markdown-frontend/Dockerfile.dev
+    container_name: co-markdown-frontend
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - frontend_node_modules:/app/co-markdown-frontend/node_modules
+
+    command: npm run dev -- --host 0.0.0.0
+
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./co-markdown-frontend
+          target: /app/co-markdown-frontend
+          ignore:
+            - node_modules/
+        - action: sync+restart
+          path: ./shared
+          target: /app/shared
+
+volumes:
+  postgres_data:
+  # 後端的 node_modules Named Volume
+  # 實際儲存位置由 Docker 管理
+  backend_node_modules:
+  frontend_node_modules:
