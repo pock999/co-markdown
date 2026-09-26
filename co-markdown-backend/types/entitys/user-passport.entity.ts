@@ -2,7 +2,10 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToOne,
 } from 'typeorm';
+
+import { UserEntity } from './user.entity.js';
 
 @Entity({ name: 'user_passport' })
 export class UserPassportEntity {
@@ -27,4 +30,9 @@ export class UserPassportEntity {
     length: 255,
   })
   providerUserId!: string;
+
+  @ManyToOne(() => UserEntity, user => user.passports, {
+    createForeignKeyConstraints: false,
+  })
+  user!: UserEntity;
 }

@@ -4,7 +4,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+
+import { UserEntity } from './user.entity.js';
 
 @Entity({ name: 'document' })
 export class DocumentEntity {
@@ -52,4 +55,9 @@ export class DocumentEntity {
     type: 'timestamptz',
   })
   updatedAt!: Date;
+
+  @ManyToOne(() => UserEntity, user => user.passports, {
+    createForeignKeyConstraints: false,
+  })
+  user!: UserEntity;
 }

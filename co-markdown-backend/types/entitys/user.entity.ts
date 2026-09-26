@@ -4,7 +4,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+
+import { UserPassportEntity } from './user-passport.entity.js';
+import { DocumentEntity } from './document.entity.js';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -41,4 +45,14 @@ export class UserEntity {
     type: 'timestamptz',
   })
   updatedAt!: Date;
+
+  @OneToMany(() => UserPassportEntity, userPassport => userPassport.user, {
+    createForeignKeyConstraints: false,
+  })
+  passports!: UserPassportEntity[];
+
+  @OneToMany(() => DocumentEntity, document => document.user, {
+    createForeignKeyConstraints: false,
+  })
+  documents!: DocumentEntity[];
 }
