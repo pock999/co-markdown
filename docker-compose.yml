@@ -1,5 +1,7 @@
 services:
+  # 此 Docker Compose 僅用於 Dev 環境
   postgres:
+    # PC(Host) → PostgreSQL：localhost:5434　｜　Backend container → PostgreSQL container：postgres:5432
     image: postgres:18
     container_name: co-markdown-postgres
     ports:

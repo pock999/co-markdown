@@ -1,0 +1,9 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5434,
+  "username": "postgres",
+  "password": "postgres",
+  "database": "co_markdown",
+  "synchronize": false
+}

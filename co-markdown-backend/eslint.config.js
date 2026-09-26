@@ -12,7 +12,11 @@ export default defineConfig([
     ],
     rules: {
       // Coding style
-      indent: ['error', 2],
+      indent: ['error', 2, {
+        ignoredNodes: [
+          'PropertyDefinition[decorators]',
+        ],
+      }],
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
