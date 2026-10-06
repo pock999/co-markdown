@@ -1,14 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import heroImg from './assets/hero.png';
 import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import './App.css';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 function App() {
   const [count, setCount] = useState(0);
 
+  const handleSuccess = (response: any) => {
+    console.log('success res => ', response);
+  };
+
+  const handleFailure = () => {
+    console.log('failure');
+  };
+
   return (
-    <>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={handleFailure}
+        theme="outline"
+        size="large"
+        text="signin_with" // 可自訂按鈕文字
+        shape="rectangular"
+      />
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -115,7 +133,7 @@ function App() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
-    </>
+    </GoogleOAuthProvider>
   );
 }
 
