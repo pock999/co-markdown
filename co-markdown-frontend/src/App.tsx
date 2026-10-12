@@ -9,8 +9,17 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 function App() {
   const [count, setCount] = useState(0);
 
-  const handleSuccess = (response: any) => {
+  const handleSuccess = async (response: any) => {
     console.log('success res => ', response);
+    const data = await fetch('http://127.0.0.1:3000/auth/google', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    const msg = await data.json();
+    console.log('msg => ', msg);
   };
 
   const handleFailure = () => {
