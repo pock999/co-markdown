@@ -3,6 +3,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { UserEntity } from './user.entity.js';
@@ -34,5 +35,6 @@ export class UserPassportEntity {
   @ManyToOne(() => UserEntity, user => user.passports, {
     createForeignKeyConstraints: false,
   })
+  @JoinColumn({ name: 'user_id' })
   user!: UserEntity;
 }

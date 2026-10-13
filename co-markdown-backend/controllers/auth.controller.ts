@@ -1,12 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type Request, type Response, Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import config from '../config/config.json' with { type: 'json' };
+
+import { AuthService } from '../services/auth.service.js';
+import { type BaseResponse } from '../response/base-response.js';
+import { HttpCode } from '../../shared/http-code.constant.js';
+import { ResponseUtils } from '../response/response-utils.js';
 
 const googleClient = new OAuth2Client(
   config.googleClientId,
 );
 
 export class AuthController {
+  private authService = new AuthService();
+
   async googleLogin(req: Request, res: Response) {
     const { credential } = req.body;
 
@@ -25,15 +33,33 @@ export class AuthController {
     }
 
     console.log('Google user:', {
-      sub: payload.sub,
       email: payload.email,
       name: payload.name,
-      picture: payload.picture,
+      email_verified: payload.email_verified,
     });
 
-    res.json({
-      message: 'Google login endpoint',
-    });
+    if (!payload.email_verified) {
+      res.status(401).json({ message: 'Unverified Google credential' });
+      return;
+    }
+
+    if (!payload.email) {
+      res.status(401).json({ message: 'Missing Google email' });
+      return;
+    }
+
+    const userInfo = await this.authService.loginOrRegister(payload);
+
+    console.log('userInfo => ', userInfo);
+
+    const responsePayload: BaseResponse<any> = {
+      message: 'Google login successful',
+      code: 'OK',
+      httpStatus: HttpCode.OK,
+      data: userInfo,
+    };
+
+    return ResponseUtils.sendResponse(res, responsePayload);
   }
 }
 
