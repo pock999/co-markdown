@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { type Request, type Response, Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import config from '../config/config.json' with { type: 'json' };
 
 import { AuthService } from '../services/auth.service.js';
-import { type BaseResponse } from '../response/base-response.js';
 import { HttpCode } from '../../shared/http-code.constant.js';
+import { ErrorCode } from '../../shared/error-code.constant.js';
 import { ResponseUtils } from '../response/response-utils.js';
 
 const googleClient = new OAuth2Client(
@@ -28,8 +28,12 @@ export class AuthController {
     const payload = ticket.getPayload();
 
     if (!payload) {
-      res.status(401).json({ message: 'Invalid Google credential' });
-      return;
+      return ResponseUtils.sendResponse(res, {
+        message: 'Invalid Google credential',
+        code: ErrorCode.AUTHENTICATION_REQUIRED,
+        httpStatus: HttpCode.UNAUTHORIZED,
+        data: null,
+      });
     }
 
     console.log('Google user:', {
@@ -39,27 +43,33 @@ export class AuthController {
     });
 
     if (!payload.email_verified) {
-      res.status(401).json({ message: 'Unverified Google credential' });
-      return;
+      return ResponseUtils.sendResponse(res, {
+        message: 'Unverified Google credential',
+        code: ErrorCode.AUTHENTICATION_REQUIRED,
+        httpStatus: HttpCode.UNAUTHORIZED,
+        data: null,
+      });
     }
 
     if (!payload.email) {
-      res.status(401).json({ message: 'Missing Google email' });
-      return;
+      return ResponseUtils.sendResponse(res, {
+        message: 'Missing Google email',
+        code: ErrorCode.AUTHENTICATION_REQUIRED,
+        httpStatus: HttpCode.UNAUTHORIZED,
+        data: null,
+      });
     }
 
     const userInfo = await this.authService.loginOrRegister(payload);
 
     console.log('userInfo => ', userInfo);
 
-    const responsePayload: BaseResponse<any> = {
+    return ResponseUtils.sendResponse(res, {
       message: 'Google login successful',
       code: 'OK',
       httpStatus: HttpCode.OK,
       data: userInfo,
-    };
-
-    return ResponseUtils.sendResponse(res, responsePayload);
+    });
   }
 }
 

@@ -3,9 +3,11 @@ import { UserPassportDao } from '../daos/user-passport.dao.js';
 import { UserDao } from '../daos/user.dao.js';
 import { UserEntity } from '../types/entitys/user.entity.js';
 import config from '../config/config.json' with { type: 'json' };
-
+import { AppException } from '../common/exception/app.exception.js';
 import jwt, { type SignOptions } from 'jsonwebtoken';
-
+import { HttpCode } from '../../shared/http-code.constant.js';
+import { ErrorCode } from '../../shared/error-code.constant.js';
+import { MessageConstant } from '../common/message.constant.js';
 export class AuthService {
   private userPassportDao = new UserPassportDao();
   private userDao = new UserDao();
@@ -31,8 +33,13 @@ export class AuthService {
       console.log('exist passport => ', userPassport);
 
       if (!userPassport.user) {
-        // TODO:
-        throw new Error('UserPassport references a missing User');
+        console.log('UserPassport does not have an associated User');
+
+        throw new AppException(
+          ErrorCode.AUTHENTICATION_REQUIRED,
+          HttpCode.UNAUTHORIZED,
+          MessageConstant.INTERNAL_SERVER_ERROR,
+        );
       }
 
       user = userPassport.user;
