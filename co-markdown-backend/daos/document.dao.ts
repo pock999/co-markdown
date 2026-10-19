@@ -1,7 +1,7 @@
 import { AppDataSource } from '../config/data-source.js';
 import { DocumentEntity } from '../types/entitys/document.entity.js';
 
-export class DocuemntDao {
+export class DocumentDao {
   private documentRepository = AppDataSource.getRepository(DocumentEntity);
 
   async findAll(): Promise<Array<DocumentEntity>> {
@@ -43,7 +43,7 @@ export class DocuemntDao {
 
   async updateMetadata(id: string, data: {
     name?: string;
-    description: string | null;
+    description?: string | null;
   }): Promise<DocumentEntity | null> {
     const doc = await this.documentRepository.findOne({
       where: {
