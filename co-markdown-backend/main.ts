@@ -5,6 +5,8 @@ import AuthRouter from './controllers/auth.controller.js';
 import DocumentRouter from './controllers/document.controller.js';
 import cors from 'cors';
 
+import { requestDataMiddleware } from './middlewares/request-data.middleware.js';
+
 const app: Express = express();
 
 const port = 3000;
@@ -16,6 +18,7 @@ AppDataSource.initialize()
     console.error('Database connection failed:', error);
   });
 app.use(cors());
+app.use(requestDataMiddleware);
 app.use(express.json());
 app.get('/', async (req: Request, res: Response) => {
 

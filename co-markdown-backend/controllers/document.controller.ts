@@ -3,6 +3,7 @@ import { DocumentService } from '../services/document.service.js';
 import { HttpCode } from '../../shared/http-code.constant.js';
 // import { ErrorCode } from '../../shared/error-code.constant.js';
 import { ResponseUtils } from '../response/response-utils.js';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 export class DocumentController {
   private documentService = new DocumentService();
@@ -34,7 +35,7 @@ const documentController = new DocumentController();
 
 DocumentRouter.get('/', documentController.getDocuments.bind(documentController));
 DocumentRouter.get('/:id', documentController.getDocumentById.bind(documentController));
-DocumentRouter.post('/', documentController.createDocument.bind(documentController));
+DocumentRouter.post('/', authMiddleware, documentController.createDocument.bind(documentController));
 DocumentRouter.patch('/:id', documentController.updateDocumentMetadata.bind(documentController));
 
 export default DocumentRouter;
