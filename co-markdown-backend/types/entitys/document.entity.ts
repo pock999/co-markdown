@@ -34,6 +34,7 @@ export class DocumentEntity {
 
   @Column({
     type: 'text',
+    default: '',
   })
   content!: string;
 
@@ -56,7 +57,7 @@ export class DocumentEntity {
   })
   updatedAt!: Date;
 
-  @ManyToOne(() => UserEntity, user => user.passports, {
+  @ManyToOne(() => UserEntity, user => user.documents, {
     createForeignKeyConstraints: false,
   })
   user!: UserEntity;
