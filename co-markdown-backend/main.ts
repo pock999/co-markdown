@@ -2,6 +2,7 @@ import express, { type Express, type Request, type Response } from 'express';
 import { AppDataSource } from './config/data-source.js';
 import { DocumentRepository } from './config/repositorys.js';
 import AuthRouter from './controllers/auth.controller.js';
+import DocumentRouter from './controllers/document.controller.js';
 import cors from 'cors';
 
 const app: Express = express();
@@ -30,6 +31,7 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 app.use('/auth', AuthRouter);
+app.use('/docs', DocumentRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
