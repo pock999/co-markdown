@@ -4,7 +4,7 @@ declare global {
       user?: {
         id: string;
       };
-      data: () => Record<string, unknown>;
+      getData: () => Record<string, unknown>;
     }
   }
 }

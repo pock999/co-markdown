@@ -5,7 +5,7 @@ export function requestDataMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  req.data = () => ({
+  req.getData = () => ({
     ...req.query,
     ...req.params,
     ...req.body,
