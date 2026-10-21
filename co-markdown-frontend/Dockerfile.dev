@@ -7,7 +7,7 @@ COPY co-markdown-frontend/package*.json ./co-markdown-frontend/
 
 WORKDIR /app/co-markdown-frontend
 
-RUN npm install
+RUN npm ci --include=optional
 
 WORKDIR /app
 
@@ -15,5 +15,36 @@ COPY co-markdown-frontend/ ./co-markdown-frontend/
 COPY shared/ ./shared/
 
 WORKDIR /app/co-markdown-frontend
+
+# RUN npm install --no-save --package-lock=false \
+#    @rolldown/binding-linux-x64-gnu@1.2.10
+ 
+
+# Download and extract Linux native bindings without npm install
+# 安裝前端在 Linux 容器中需要的原生套件。
+# 使用 npm pack 與 tar 下載、解壓縮套件，避免 npm install
+# 單獨安裝原生套件時遇到的依賴樹錯誤。
+# 原生套件版本需與對應的前端依賴版本一致。
+RUN set -eux; \
+    mkdir -p /tmp/native \
+      node_modules/@rolldown/binding-linux-x64-gnu \
+      node_modules/lightningcss-linux-x64-gnu \
+      node_modules/@tailwindcss/oxide-linux-x64-gnu \
+      node_modules/@tailwindcss/node/node_modules/lightningcss/node_modules/lightningcss-linux-x64-gnu; \
+    npm pack --pack-destination /tmp/native @rolldown/binding-linux-x64-gnu@1.2.10; \
+    npm pack --pack-destination /tmp/native lightningcss-linux-x64-gnu@1.33.0; \
+    npm pack --pack-destination /tmp/native lightningcss-linux-x64-gnu@1.32.0; \
+    npm pack --pack-destination /tmp/native @tailwindcss/oxide-linux-x64-gnu@4.3.3; \
+    tar -xzf /tmp/native/rolldown-binding-linux-x64-gnu-1.2.10.tgz \
+      --strip-components=1 -C node_modules/@rolldown/binding-linux-x64-gnu; \
+    tar -xzf /tmp/native/lightningcss-linux-x64-gnu-1.33.0.tgz \
+      --strip-components=1 -C node_modules/lightningcss-linux-x64-gnu; \
+    tar -xzf /tmp/native/lightningcss-linux-x64-gnu-1.32.0.tgz \
+      --strip-components=1 -C node_modules/@tailwindcss/node/node_modules/lightningcss/node_modules/lightningcss-linux-x64-gnu; \
+    cp node_modules/@tailwindcss/node/node_modules/lightningcss/node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node \
+      node_modules/@tailwindcss/node/node_modules/lightningcss/; \
+    tar -xzf /tmp/native/tailwindcss-oxide-linux-x64-gnu-4.3.3.tgz \
+      --strip-components=1 -C node_modules/@tailwindcss/oxide-linux-x64-gnu; \
+    rm -rf /tmp/native
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
