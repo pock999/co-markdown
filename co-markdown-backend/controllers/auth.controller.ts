@@ -8,6 +8,8 @@ import { HttpCode } from '../../shared/http-code.constant.js';
 import { ErrorCode } from '../../shared/error-code.constant.js';
 import { ResponseUtils } from '../response/response-utils.js';
 
+import { googleLoginSchema } from '../schemas/auth.schema.js';
+
 const googleClient = new OAuth2Client(
   config.googleClientId,
 );
@@ -16,8 +18,24 @@ export class AuthController {
   private authService = new AuthService();
 
   async googleLogin(req: Request, res: Response) {
-    const { credential } = req.body;
 
+    const parseResult = googleLoginSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
+
+      return ResponseUtils.sendResponse(res, {
+        message: 'Validation failed',
+        code: ErrorCode.BAD_REQUEST,
+        httpStatus: HttpCode.BAD_REQUEST,
+        data: errors,
+      });
+    }
+
+    const { credential } = parseResult.data;
     console.log('credential => ', credential);
 
     const ticket = await googleClient.verifyIdToken({

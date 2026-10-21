@@ -12,6 +12,8 @@ export const ErrorCode = {
   // db, be service 發生錯誤，常配 500
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 
+  BAD_REQUEST: "BAD_REQUEST",
+
   // 預期外的 Error，通常配 500
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;

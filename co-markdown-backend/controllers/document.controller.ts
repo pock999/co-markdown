@@ -4,6 +4,7 @@ import { HttpCode } from '../../shared/http-code.constant.js';
 import { ErrorCode } from '../../shared/error-code.constant.js';
 import { ResponseUtils } from '../response/response-utils.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { getDocumentByIdSchema, createDocumentSchema, updateDocumentMetadataSchema } from '../schemas/document.schema.js';
 
 export class DocumentController {
   private documentService = new DocumentService();
@@ -18,9 +19,26 @@ export class DocumentController {
     });
   }
   async getDocumentById(req: Request, res: Response) {
+
+    const parseResult = getDocumentByIdSchema.safeParse(req.getData());
+
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
+
+      return ResponseUtils.sendResponse(res, {
+        message: 'Validation failed',
+        code: ErrorCode.BAD_REQUEST,
+        httpStatus: HttpCode.BAD_REQUEST,
+        data: errors,
+      });
+    }
+
     const {
       id,
-    } = req.getData() as { id: string };
+    } = parseResult.data;
 
     const data = this.documentService.getDocumentById(id);
 
@@ -32,7 +50,6 @@ export class DocumentController {
     });
   }
   async createDocument(req: Request, res: Response) {
-
     if (!req.user) {
       return ResponseUtils.sendResponse(res, {
         message: 'Unauthorized',
@@ -42,13 +59,26 @@ export class DocumentController {
       });
     }
 
+    const parseResult = createDocumentSchema.safeParse(req.getData());
+
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
+
+      return ResponseUtils.sendResponse(res, {
+        message: 'Validation failed',
+        code: ErrorCode.BAD_REQUEST,
+        httpStatus: HttpCode.BAD_REQUEST,
+        data: errors,
+      });
+    }
+
     const {
       name,
       description,
-    } = req.getData() as {
-      name: string;
-      description: string | null;
-    };
+    } = parseResult.data;
 
     const { id: userId } = req.user;
     // TODO:
@@ -68,15 +98,27 @@ export class DocumentController {
   async updateDocumentMetadata(req: Request, res: Response) {
     // TODO: 目前不考慮 allowGuestEdit
 
+    const parseResult = updateDocumentMetadataSchema.safeParse(req.getData());
+
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
+
+      return ResponseUtils.sendResponse(res, {
+        message: 'Validation failed',
+        code: ErrorCode.BAD_REQUEST,
+        httpStatus: HttpCode.BAD_REQUEST,
+        data: errors,
+      });
+    }
+
     const {
       id,
       name,
       description,
-    } = req.getData() as {
-      id: string
-      name: string;
-      description: string | null;
-    };
+    } = parseResult.data;
 
     const data = await this.documentService.updateDocumentMetadata(id, {
       name, description,
