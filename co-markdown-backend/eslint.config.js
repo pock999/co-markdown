@@ -21,6 +21,13 @@ export default defineConfig([
       semi: ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
 
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+        },
+      ],
+
       // Disabled TypeScript rules
       '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/triple-slash-reference': 'off',

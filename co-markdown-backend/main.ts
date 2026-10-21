@@ -6,6 +6,7 @@ import DocumentRouter from './controllers/document.controller.js';
 import cors from 'cors';
 
 import { requestDataMiddleware } from './middlewares/request-data.middleware.js';
+import { errorHandler } from './middlewares/error-handler.middleware.js';
 
 const app: Express = express();
 
@@ -36,6 +37,8 @@ app.get('/', async (req: Request, res: Response) => {
 app.use('/auth', AuthRouter);
 app.use('/docs', DocumentRouter);
 
+
+app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

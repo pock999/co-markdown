@@ -40,7 +40,16 @@ export class DocumentController {
       id,
     } = parseResult.data;
 
-    const data = this.documentService.getDocumentById(id);
+    const data = await this.documentService.getDocumentById(id);
+
+    if (!data) {
+      return ResponseUtils.sendResponse(res, {
+        message: 'Document not found',
+        code: ErrorCode.RESOURCE_NOT_FOUND,
+        httpStatus: HttpCode.NOT_FOUND,
+        data: null,
+      });
+    }
 
     return ResponseUtils.sendResponse(res, {
       message: 'Document retrieved successfully',
@@ -123,6 +132,15 @@ export class DocumentController {
     const data = await this.documentService.updateDocumentMetadata(id, {
       name, description,
     });
+
+    if (!data) {
+      return ResponseUtils.sendResponse(res, {
+        message: 'Document not found',
+        code: ErrorCode.RESOURCE_NOT_FOUND,
+        httpStatus: HttpCode.NOT_FOUND,
+        data: null,
+      });
+    }
 
     return ResponseUtils.sendResponse(res, {
       message: 'Document Update Metadata successfully',
