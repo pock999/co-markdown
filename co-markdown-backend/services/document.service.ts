@@ -29,7 +29,7 @@ export class DocumentService {
 
   async updateDocumentMetadata(isUser: boolean, id: string, data: {
     name?: string;
-    description?: string | null;
+    description?: string | null | undefined;
   }): Promise<DocumentEntity | null> {
     // 未來 transaction ，可考慮 select for update
     const document = await this.documentDao.findById(id);

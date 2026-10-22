@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { UserEntity } from './user.entity.js';
@@ -57,8 +58,10 @@ export class DocumentEntity {
   })
   updatedAt!: Date;
 
-  @ManyToOne(() => UserEntity, user => user.documents, {
+  @ManyToOne(() => UserEntity, owner => owner.documents, {
     createForeignKeyConstraints: false,
   })
-  user!: UserEntity;
+  @JoinColumn({ name: 'owner_id', referencedColumnName: 'id' })
+  owner!: UserEntity;
 }
+

@@ -51,7 +51,7 @@ export class UserEntity {
   })
   passports!: UserPassportEntity[];
 
-  @OneToMany(() => DocumentEntity, document => document.user, {
+  @OneToMany(() => DocumentEntity, document => document.owner, {
     createForeignKeyConstraints: false,
   })
   documents!: DocumentEntity[];

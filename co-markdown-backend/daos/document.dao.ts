@@ -43,7 +43,7 @@ export class DocumentDao {
 
   async updateMetadata(id: string, data: {
     name?: string;
-    description?: string | null;
+    description?: string | null | undefined;
   }): Promise<DocumentEntity | null> {
     const doc = await this.documentRepository.findOne({
       where: {
@@ -59,7 +59,7 @@ export class DocumentDao {
       doc.name = data.name;
     }
 
-    if (data.description !== undefined) {
+    if (data.description !== undefined && data.description !== null) {
       doc.description = data.description;
     }
 

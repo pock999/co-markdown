@@ -11,6 +11,8 @@ import { getDocumentByIdSchema, createDocumentSchema, updateDocumentMetadataSche
 export class DocumentController {
   private documentService = new DocumentService();
   async getDocuments(req: Request, res: Response) {
+    console.log('log getDocuments');
+    console.debug('debug getDocuments');
     const data = await this.documentService.getAllDocuments();
 
     return ResponseUtils.sendResponse(res, {
@@ -21,7 +23,8 @@ export class DocumentController {
     });
   }
   async getDocumentById(req: Request, res: Response) {
-
+    console.log('log getDocumentById');
+    console.debug('debug getDocumentById');
     const parseResult = getDocumentByIdSchema.safeParse(req.getData());
 
     if (!parseResult.success) {

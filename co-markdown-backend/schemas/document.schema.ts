@@ -21,7 +21,7 @@ export type CreateDocumentInput = z.infer<
 export const updateDocumentMetadataSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1),
-  description: z.string().min(1).nullable(),
+  description: z.string().min(1).nullable().optional(),
 });
 
 export type UpdateDocumentMetadataInput = z.infer<
