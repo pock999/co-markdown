@@ -14,6 +14,8 @@ export const ErrorCode = {
 
   BAD_REQUEST: "BAD_REQUEST",
 
+  FORBIDDEN: 'FORBIDDEN',
+
   // 預期外的 Error，通常配 500
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;

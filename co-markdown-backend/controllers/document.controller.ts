@@ -4,6 +4,8 @@ import { HttpCode } from '../../shared/http-code.constant.js';
 import { ErrorCode } from '../../shared/error-code.constant.js';
 import { ResponseUtils } from '../response/response-utils.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { identifyUserMiddleware } from '../middlewares/identify-user.middleware.js';
+
 import { getDocumentByIdSchema, createDocumentSchema, updateDocumentMetadataSchema } from '../schemas/document.schema.js';
 
 export class DocumentController {
@@ -123,13 +125,15 @@ export class DocumentController {
       });
     }
 
+    const isUser = !!req.user;
+
     const {
       id,
       name,
       description,
     } = parseResult.data;
 
-    const data = await this.documentService.updateDocumentMetadata(id, {
+    const data = await this.documentService.updateDocumentMetadata(isUser, id, {
       name, description,
     });
 
@@ -157,6 +161,6 @@ const documentController = new DocumentController();
 DocumentRouter.get('/', documentController.getDocuments.bind(documentController));
 DocumentRouter.get('/:id', documentController.getDocumentById.bind(documentController));
 DocumentRouter.post('/', authMiddleware, documentController.createDocument.bind(documentController));
-DocumentRouter.patch('/:id', documentController.updateDocumentMetadata.bind(documentController));
+DocumentRouter.patch('/:id', identifyUserMiddleware, documentController.updateDocumentMetadata.bind(documentController));
 
 export default DocumentRouter;
