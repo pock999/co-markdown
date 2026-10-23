@@ -5,14 +5,27 @@ import { useNavigate } from 'react-router';
 
 import { googleLogin } from '../services/api/auth.api';
 
+import { useUIMessage } from '../common/ui-message/hooks/useUIMessage';
+import { MessageType } from '../common/ui-message/message-type';
+import { PresentationType } from '../common/ui-message/presentation-type';
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const { notify } = useUIMessage();
 
   const handleSuccess = async (response: any) => {
     console.log('success res => ', response);
     const data = await googleLogin(response.credential);
     login(data.jwtToken, { name: data.name, email: data.email });
+
+    notify({
+      presentation: PresentationType.NOTIFICATION,
+      type: MessageType.SUCCESS,
+      message: '登入成功！',
+    });
+
     navigate('/documents');
   };
 

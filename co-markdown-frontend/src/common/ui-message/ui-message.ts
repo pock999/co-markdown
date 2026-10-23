@@ -13,8 +13,12 @@ export interface NotificationMessage extends BaseUIMessage {
 
 export interface DialogMessage extends BaseUIMessage {
   presentation: typeof PresentationType.DIALOG;
+  title?: string;
   confirmText?: string;
   cancelText?: string;
+  showCancel?: boolean;
+  closeOnOverlayClick?: boolean;
+  closeOnEscape?: boolean;
 }
 
 export type UIMessage =
