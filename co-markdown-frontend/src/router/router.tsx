@@ -2,6 +2,7 @@ import {
   createBrowserRouter,
   Navigate,
   type RouteObject,
+  useLocation,
 } from 'react-router';
 
 import type { ReactNode } from 'react';
@@ -9,8 +10,8 @@ import type { ReactNode } from 'react';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../pages/LoginPage';
 import DocumentsPage from '../pages/DocumentsPage';
-import DocumentPreviewPage from '../pages/DocumentPreviewPage';
 import DocumentEditorPage from '../pages/DocumentEditorPage';
+import LoadingScreen from '../components/LoadingScreen';
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -30,9 +31,10 @@ function RouteGuard({
   children: ReactNode;
 }) {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <LoadingScreen />;
   }
 
   if (access === 'guest' && isAuthenticated) {
@@ -40,7 +42,7 @@ function RouteGuard({
   }
 
   if (access === 'authenticated' && !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return children;
@@ -64,13 +66,8 @@ const routes: AppRoute[] = [
   },
   {
     path: '/documents/:documentId',
-    element: <DocumentPreviewPage />,
-    access: 'public',
-  },
-  {
-    path: '/documents/:documentId/edit',
     element: <DocumentEditorPage />,
-    access: 'authenticated',
+    access: 'public',
   },
 ];
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 import { googleLogin } from '../services/api/auth.api';
 
@@ -9,8 +9,35 @@ import { useUIMessage } from '../common/ui-message/hooks/useUIMessage';
 import { MessageType } from '../common/ui-message/message-type';
 import { PresentationType } from '../common/ui-message/presentation-type';
 
+function getReturnLocation(state: unknown) {
+  if (typeof state !== 'object' || state === null || !('from' in state)) {
+    return null;
+  }
+
+  const from = state.from;
+  if (
+    typeof from !== 'object' ||
+    from === null ||
+    !('pathname' in from) ||
+    typeof from.pathname !== 'string' ||
+    !from.pathname.startsWith('/') ||
+    from.pathname.startsWith('//') ||
+    from.pathname === '/login'
+  ) {
+    return null;
+  }
+
+  return {
+    pathname: from.pathname,
+    search:
+      'search' in from && typeof from.search === 'string' ? from.search : '',
+    hash: 'hash' in from && typeof from.hash === 'string' ? from.hash : '',
+  };
+}
+
 export default function LoginPage() {
   const { login } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { notify } = useUIMessage();
@@ -26,7 +53,9 @@ export default function LoginPage() {
       message: '登入成功！',
     });
 
-    navigate('/documents');
+    navigate(getReturnLocation(location.state) ?? '/documents', {
+      replace: true,
+    });
   };
 
   const handleFailure = () => {

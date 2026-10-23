@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import CreateDocumentDialog from '../components/CreateDocumentDialog';
 import Navbar from '../components/Navbar';
+import { MessageType } from '../common/ui-message/message-type';
+import { PresentationType } from '../common/ui-message/presentation-type';
+import { useUIMessage } from '../common/ui-message/hooks/useUIMessage';
 import { useAuth } from '../contexts/AuthContext';
-import { getDocuments } from '../services/api/document.api';
-import type { Document } from '../types/document.type';
+import {
+  createDocument,
+  getDocuments,
+} from '../services/api/document.api';
+import type { CreateDocumentRequest, Document } from '../types/document.type';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -21,10 +28,13 @@ function formatDate(value: string): string {
 
 export default function DocumentsPage() {
   const { token, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { notify } = useUIMessage();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -61,6 +71,24 @@ export default function DocumentsPage() {
     };
   }, [token, reloadKey]);
 
+  async function handleCreateDocument(data: CreateDocumentRequest) {
+    if (!token) {
+      throw new Error('請先登入再建立文件。');
+    }
+
+    const document = await createDocument(data, token);
+    setDocuments((current) => [
+      document,
+      ...current.filter((item) => item.id !== document.id),
+    ]);
+    notify({
+      presentation: PresentationType.NOTIFICATION,
+      type: MessageType.SUCCESS,
+      message: '文件已建立。',
+    });
+    navigate(`/documents/${encodeURIComponent(document.id)}`);
+  }
+
   return (
     <main className="min-h-screen bg-[#f2f1eb] px-3 py-6 text-[#202b25] sm:px-6 sm:py-10">
       <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-[28px] border border-[#e7e5dc] bg-[#fffefa] shadow-[0_24px_80px_-32px_rgba(34,48,39,0.24)]">
@@ -76,23 +104,19 @@ export default function DocumentsPage() {
                 Documents
               </h1>
               <p className="mt-2 text-sm leading-6 text-[#737a72]">
-                瀏覽文件，並開啟預覽或編輯。
+                瀏覽文件，並開啟文件工作區。
               </p>
             </div>
 
             {isAuthenticated && (
-              <div className="flex flex-col items-start gap-1">
+              <div>
                 <button
                   type="button"
-                  disabled
-                  title="目前尚未提供新增文件流程"
-                  className="inline-flex min-h-11 cursor-not-allowed items-center justify-center rounded-xl bg-[#183c32]/55 px-5 py-2.5 text-sm font-semibold text-white"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#183c32] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#244b3e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#526c4f]"
                 >
                   + 新增文件
                 </button>
-                <span className="text-xs text-[#8a8f87]">
-                  新增功能尚未開放
-                </span>
               </div>
             )}
           </div>
@@ -127,7 +151,7 @@ export default function DocumentsPage() {
                 目前沒有文件
               </h2>
               <p className="mt-2 text-sm text-[#737a72]">
-                新文件建立功能開放後，就能在這裡查看文件。
+                建立文件後，就能在這裡查看文件。
               </p>
             </div>
           ) : (
@@ -135,7 +159,6 @@ export default function DocumentsPage() {
               {documents.map((document) => {
                 const description = document.description?.trim();
                 const previewPath = `/documents/${encodeURIComponent(document.id)}`;
-                const editPath = `${previewPath}/edit`;
 
                 return (
                   <li
@@ -164,23 +187,8 @@ export default function DocumentsPage() {
                         to={previewPath}
                         className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[#dcded5] px-4 py-2 text-sm font-medium text-[#244638] no-underline transition-colors hover:bg-[#f4f5ef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#526c4f]"
                       >
-                        預覽
+                        開啟工作區
                       </Link>
-                      {isAuthenticated ? (
-                        <Link
-                          to={editPath}
-                          className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#183c32] px-4 py-2 text-sm font-medium text-white no-underline transition-colors hover:bg-[#244b3e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#526c4f]"
-                        >
-                          編輯
-                        </Link>
-                      ) : document.allowGuestEdit ? (
-                        <span
-                          title="目前編輯頁需要登入"
-                          className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-xl border border-[#dcded5] px-4 py-2 text-sm font-medium text-[#8a8f87]"
-                        >
-                          編輯（需登入）
-                        </span>
-                      ) : null}
                     </div>
                   </li>
                 );
@@ -189,6 +197,12 @@ export default function DocumentsPage() {
           )}
         </section>
       </div>
+      {isCreateDialogOpen && (
+        <CreateDocumentDialog
+          onClose={() => setIsCreateDialogOpen(false)}
+          onCreate={handleCreateDocument}
+        />
+      )}
     </main>
   );
 }

@@ -1,8 +1,9 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f2f1eb] p-3 text-[#202b25] sm:p-6">
@@ -58,6 +59,7 @@ export default function LandingPage() {
             {!isAuthenticated && (
               <Link
                 to="/login"
+                state={{ from: location }}
                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#dcded5] bg-[#fffefa] px-5 py-3 text-sm font-semibold text-[#244638] no-underline transition-colors hover:bg-[#f4f5ef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#526c4f]"
               >
                 登入

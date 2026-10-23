@@ -4,6 +4,7 @@ import type {
   CreateDocumentRequest,
   Document,
   DocumentDetail,
+  UpdateDocumentMetadataRequest,
 } from '../../types/document.type';
 
 export function getDocuments(
@@ -34,6 +35,21 @@ export function createDocument(
 ): Promise<DocumentDetail> {
   return apiRequest<DocumentDetail>('/docs', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    token,
+  });
+}
+
+export function updateDocumentMetadata(
+  id: string,
+  data: UpdateDocumentMetadataRequest,
+  token?: string | null,
+): Promise<DocumentDetail> {
+  return apiRequest<DocumentDetail>(`/docs/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },

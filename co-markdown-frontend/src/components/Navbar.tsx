@@ -1,8 +1,9 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,6 +38,7 @@ export default function Navbar() {
         ) : (
           <Link
             to="/login"
+            state={{ from: location }}
             className="rounded-xl border border-[#dcded5] px-4 py-2 font-medium text-[#244638] no-underline transition-colors hover:bg-[#f4f5ef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#526c4f]"
           >
             登入
