@@ -3,22 +3,15 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 
+import { googleLogin } from '../services/api/auth.api';
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSuccess = async (response: any) => {
     console.log('success res => ', response);
-    const res = await fetch('http://127.0.0.1:3000/auth/google', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ credential: response.credential }),
-    });
-    const resBody = await res.json();
-    console.log('resBody', resBody);
-    const { data } = resBody;
+    const data = await googleLogin(response.credential);
     login(data.jwtToken, { name: data.name, email: data.email });
     navigate('/documents');
   };
