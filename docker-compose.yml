@@ -22,6 +22,7 @@ services:
     container_name: co-markdown-backend
     ports:
       - "3000:3000"
+      - "3001:3001" # for web socket
     volumes:
       # backend_node_modules 是 Volume 的「名稱」
       # 不是 alias，這個 Volume 是獨立的儲存空間，

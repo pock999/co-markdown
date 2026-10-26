@@ -6,7 +6,7 @@ import cors from 'cors';
 
 import { requestDataMiddleware } from './middlewares/request-data.middleware.js';
 import { errorHandler } from './middlewares/error-handler.middleware.js';
-
+import { startWebSocketServer } from './surveys/ws-test.js';
 
 async function startServer() {
   try {
@@ -31,6 +31,9 @@ async function startServer() {
     app.listen(port, () => {
       console.log(`Example app listening on port ${port}`);
     });
+
+    startWebSocketServer();
+
   } catch (error) {
     console.error('Database connection failed:', error);
     process.exitCode = 1;
