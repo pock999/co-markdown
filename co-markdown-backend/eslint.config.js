@@ -16,7 +16,7 @@ export default defineConfig([
         ignoredNodes: [
           'PropertyDefinition[decorators]',
         ],
-      }],
+      }, { SwitchCase: 0 }],
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],

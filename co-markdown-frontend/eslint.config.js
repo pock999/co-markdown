@@ -19,7 +19,7 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      indent: ['error', 2],
+      indent: ['error', 2, { SwitchCase: 0 }],
       semi: ['error', 'always'],
       quotes: ['error', 'single'],
       'comma-dangle': ['error', 'always-multiline'],
