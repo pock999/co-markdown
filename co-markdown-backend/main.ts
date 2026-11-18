@@ -6,7 +6,7 @@ import cors from 'cors';
 
 import { requestDataMiddleware } from './middlewares/request-data.middleware.js';
 import { errorHandler } from './middlewares/error-handler.middleware.js';
-import { startWebSocketServer } from './surveys/ws-test.js';
+import { startWebSocketServer } from './websocket/server.js';
 
 async function startServer() {
   try {
