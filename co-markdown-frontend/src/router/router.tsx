@@ -12,6 +12,7 @@ import LoginPage from '../pages/LoginPage';
 import DocumentsPage from '../pages/DocumentsPage';
 import DocumentEditorPage from '../pages/DocumentEditorPage';
 import LoadingScreen from '../components/LoadingScreen';
+import TestPage from '../surveys/TestPage';
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -67,6 +68,11 @@ const routes: AppRoute[] = [
   {
     path: '/documents/:documentId',
     element: <DocumentEditorPage />,
+    access: 'public',
+  },
+  {
+    path: '/test',
+    element: <TestPage />,
     access: 'public',
   },
 ];
