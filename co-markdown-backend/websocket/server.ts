@@ -6,6 +6,9 @@ import {
   removeConnection,
   getConnectionCount,
 } from './connection-manager.js';
+import {
+  leaveAllRooms
+} from './room-manager.js';
 import type { WebSocketMessage } from './types/message.js';
 import { handleMessage } from './message-handler.js';
 
@@ -229,6 +232,7 @@ export function startWebSocketServer() {
 
     // 關閉連線
     ws.on('close', () => {
+      leaveAllRooms(ws);
       removeConnection(ws);
 
       console.log('Client disconnected');
